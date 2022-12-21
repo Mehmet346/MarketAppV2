@@ -1,100 +1,98 @@
-import React, {useState, useContext, useEffect} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet ,Text, TouchableOpacity, View} from "react-native";
-import { PracticeContext } from '../Global/PracticeContext';
+import React, { useState, useContext, useEffect } from 'react';
+import { SafeAreaView, ScrollView, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Store } from '../utils/Store';
 
-export default function AccountStatment({navigation}) {
-    const {
-        kekstra, 
-        kekstraPrice, 
-        cubukKraker, 
-        cubukKrakerPrice, 
-        sut, 
-        sutPrice, 
-        amount, 
-        } = useContext(PracticeContext)
+export default function AccountStatment({ navigation }) {
 
-        
-        AccountStatment.navigationOptions = ({}) => ({
-            title: 'Hesap',
-            headerRight: () => <Text style={style.bar}>{amount} TL</Text>,
-            headerStyle: {
-                backgroundColor: '#d50000',
-              },
-              headerTintColor: '#fff',
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-        });
-    
-        useEffect(() => {
-             navigation.setParams({ amount });
-        }, [amount]);
-        
+  const { state, dispatch, amount, setAmount } = useContext(Store)
+  const { basket } = state;
 
-        return(
-            <SafeAreaView>
-            <View>
-                    <View >
-                        <View style={style.main}>
-                            <View style={style.area}>
-                                <Text style={style.product}>Kekstra Portakallı</Text>
-                                <Text style={style.product}>{kekstraPrice} TL</Text>
-                            </View>
-                                    
-                            <View style= {style.counter}>
-                                <Text style={style.product}>ALINAN:</Text>
-                                <Text style={style.num}>{kekstra}</Text>
-                                <Text style={style.product}>Total: {kekstra * kekstraPrice} TL</Text>  
-                            </View>
-                        </View>
-                    </View>
+  AccountStatment.navigationOptions = ({ }) => ({
+    title: 'Hesap',
+    headerRight: () => <Text style={style.bar}>{amount} TL</Text>,
+    headerStyle: {
+      backgroundColor: '#d50000',
+    },
+    headerTintColor: '#fff',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    },
+  });
 
-                    <View >
-                        <View style={style.main}>
-                            <View style={style.area}>
-                                <Text style={style.product}>Çubuk Kraker</Text>
-                                <Text style={style.product}>{cubukKrakerPrice} TL</Text>
-                            </View>
-                                    
-                            <View style= {style.counter}>
-                                <Text style={style.product}>ALINAN:</Text>
-                                <Text style={style.num}>{cubukKraker}</Text>
-                                <Text style={style.product}>Total: {cubukKraker * cubukKrakerPrice} TL</Text>  
-                            </View>
-                        </View>
-                    </View>
+  useEffect(() => {
+    navigation.setParams({ amount });
+  }, [amount]);
 
-                    <View >
-                        <View style={style.main}>
-                            <View style={style.area}>
-                                <Text style={style.product}>Süt</Text>
-                                <Text style={style.product}>{sutPrice} TL</Text>
-                            </View>
-                                    
-                            <View style= {style.counter}>
-                                <Text style={style.product}>ALINAN:</Text>
-                                <Text style={style.num}>{sut}</Text>
-                                <Text style={style.product}>Total: {sut * sutPrice} TL</Text>  
-                            </View>
-                        </View>
-                    </View>
-            </View>
-        </SafeAreaView>
-        )
-    
+  const products = [
+    {
+      name: 'product_1',
+      qty: 20,
+      id: 1,
+      price: 10,
+    },
+    {
+      name: 'product_2',
+      qty: 20,
+      id: 2,
+      price: 10,
+    },
+    {
+      name: 'product_3',
+      qty: 20,
+      id: 3,
+      price: 10,
+    },
+    {
+      name: 'product_4',
+      qty: 20,
+      id: 4,
+      price: 10,
+    }
+  ]
+  const Item = ({ ProductName, ProductPrice, ProductStock, id }) => (
+    <View >
+      <View style={style.main}>
+        <View style={style.area}>
+          <Text style={style.product}>{ProductName}</Text>
+          <Text style={style.product}>{ProductPrice} TL</Text>
+        </View>
+
+        <View style={style.counter}>
+          <Text style={style.product}>ALINAN:</Text>
+          <Text style={style.num}>{basket.find((item) => item.id == id)?.sepetadet}</Text>
+          <Text style={style.product}>Total: {basket.find((item) => item.id == id)?.sepetadet * ProductPrice} TL</Text>
+        </View>
+      </View>
+    </View>
+  )
+
+  const renderItem = ({ item }) => (
+    <Item key={item.id} ProductName={item.name} ProductStock={item.qty} ProductPrice={item.price}
+      id={item.id} />
+  );
+  return (
+    <SafeAreaView>
+      <FlatList
+        data={basket.filter(item => item.sepetadet > 0)}
+        renderItem={renderItem}
+        keyExtractor={product => product.id}
+      />
+    </SafeAreaView>
+  );
+
 }
 
 
 const style = StyleSheet.create({
-    main: { backgroundColor: '#64ffda', margin: 15, padding: 15,},
-    area: { justifyContent: "space-between", flexDirection: "row", display: "flex" , marginHorizontal: 20},
-    counter:{justifyContent: "space-between", flexDirection: "row", display: "flex", marginTop: 15, marginHorizontal: 60},
-    button: {padding:5, backgroundColor: 'grey'},
-    footer: {alignItems:'center', marginTop: 200 },
-    text: {fontWeight: '400', fontSize:30, },
-    button_footer: {marginHorizontal:100, alignItems:'center', backgroundColor: 'grey',},
-    product: { paddingHorizontal: 5, paddingVertical: 3, marginTop:10 , fontWeight:'bold'},
-    num: {fontSize: 30, fontWeight: 'bold',},
-    bar:{color: 'white', marginRight: 15}
+  main: { backgroundColor: '#64ffda', margin: 15, padding: 15, },
+  area: { justifyContent: "space-between", flexDirection: "row", display: "flex", marginHorizontal: 20 },
+  counter: { justifyContent: "space-between", flexDirection: "row", display: "flex", marginTop: 15, marginHorizontal: 60 },
+  button: { padding: 5, backgroundColor: 'grey' },
+  footer: { alignItems: 'center', marginTop: 200 },
+  text: { fontWeight: '400', fontSize: 30, },
+  button_footer: { marginHorizontal: 100, alignItems: 'center', backgroundColor: 'grey', },
+  product: { paddingHorizontal: 5, paddingVertical: 3, marginTop: 10, fontWeight: 'bold' },
+  num: { fontSize: 30, fontWeight: 'bold', },
+  bar: { color: 'white', marginRight: 15 }
 })
 

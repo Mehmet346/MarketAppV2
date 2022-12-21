@@ -1,32 +1,32 @@
 import React, {useState, useContext, useEffect} from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { PracticeContext } from '../Global/PracticeContext';
+// import { PracticeContext } from '../Global/PracticeContext';
 
 
 export default function Admin({navigation}) {
-    const {
-        kekstraStock,
-        cubukKrakerStock,
-        sutStock,
-        AdminAmount, 
-    } = useContext(PracticeContext)
+    // const {
+    //     kekstraStock,
+    //     cubukKrakerStock,
+    //     sutStock,
+    //     AdminAmount, 
+    // } = useContext(PracticeContext)
 
 
 
 
-    Admin.navigationOptions = ({}) => ({
-        title: 'Admin',
-        headerStyle: {
-            backgroundColor: '#d50000',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-    });
-    useEffect(() => {
-        navigation.setParams({ });
-   },[]);
+//     Admin.navigationOptions = ({}) => ({
+//         title: 'Admin',
+//         headerStyle: {
+//             backgroundColor: '#d50000',
+//           },
+//           headerTintColor: '#fff',
+//           headerTitleStyle: {
+//             fontWeight: 'bold',
+//           },
+//     });
+//     useEffect(() => {
+//         navigation.setParams({ });
+//    },[]);
 
  
 
