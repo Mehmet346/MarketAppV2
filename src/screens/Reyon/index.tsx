@@ -54,21 +54,28 @@ function Product({ navigation }) {
     },
     {
       name: 'product_2',
-      qty: 20,
+      qty: 15,
       id: 2,
-      price: 10,
+      price: 3.75,
     },
     {
       name: 'product_3',
-      qty: 20,
+      qty: 18,
       id: 3,
-      price: 10,
+      price: 6.25,
     },
     {
       name: 'product_4',
       qty: 20,
       id: 4,
-      price: 10,
+      price: 3,
+    }
+    ,
+    {
+      name: 'product_5',
+      qty: 22,
+      id: 5,
+      price: 4.5,
     }
   ];
 

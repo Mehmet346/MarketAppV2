@@ -120,7 +120,7 @@ const style = StyleSheet.create({
   button: { padding: 5, backgroundColor: '#bdbdbd' },
   count: { fontWeight: "600", paddingHorizontal: 5 },
   count_weight: { fontWeight: "700", fontSize: 20 },
-  footer: { alignItems: 'center', marginTop: 200 },
+  footer: { alignItems: 'center'},
   text: { fontWeight: '400', fontSize: 30, },
   button_footer: { marginHorizontal: 100, alignItems: 'center', backgroundColor: '#bdbdbd', },
   bar: { color: 'white', marginRight: 15 }

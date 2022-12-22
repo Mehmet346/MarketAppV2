@@ -1,12 +1,17 @@
 import React, { useContext, useEffect } from 'react';
 import { SafeAreaView, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import firebase from '@react-native-firebase/app';
+import auth from '@react-native-firebase/auth';
 import { Store } from '../utils/Store';
+
 
 
 export default function Admin({ navigation }) {
 
     const { state, dispatch, AdminAmount, setAdminAmount } = useContext(Store)
     const { basket, debt_state } = state;
+    const user = firebase.auth().currentUser;
+    const email = user?.email;
 
     Admin.navigationOptions = ({ }) => ({
         title: 'Admin',
@@ -96,39 +101,58 @@ export default function Admin({ navigation }) {
     const renderDebt = ({ item }) => (    //FlatList Debt
     <DebtItem key={item.id} PersonelName={item.personelName} Debt={item.debt} state={item.state} id={item.id} />);
 
+    function logout(){
+        auth()
+        .signOut()
+        .then(() => console.log('User signed out!'));
+       }
+       
     return (
         <SafeAreaView>
-                    <View style={style.page}>
-            <View style={style.button_footer}>
-                <Text style={style.text}>KALAN STOKLAR</Text>
-            </View>
-            <FlatList
-                data={basket}
-                renderItem={renderItem}
-                keyExtractor={product => product.id}
-            />
-            <View style={style.button_borc}>
-                <Text style={style.text}>BORÇLAR</Text>
-            </View>
-            <FlatList
-                data={Debt}
-                renderItem={renderDebt}
-                keyExtractor={product => product.id}
-            />
-            <View style={style.button_footer}>
-                <Text style={style.text}>TOPLANAN PARA</Text>
-            </View>
+            {(email != 'admin@gmail.com') ?
+             <View>
+                <Text style={style.user}>Admin değilsiniz!</Text>
+             <TouchableOpacity onPress={() => logout()}>
+                <Text>Çıkış Yap</Text>
+            </TouchableOpacity></View>  
+            : 
+            <TouchableOpacity onPress={() => logout()}>
+                <Text>Çıkış Yap</Text>
+            </TouchableOpacity>
 
-            <View style={style.main}>
-                <View>
-                    <Text>MEVCUT BAKİYE</Text>
-                </View>
-                <View>
-                    <Text>{AdminAmount} TL</Text>
-                </View>
+            }
+                {(email == 'admin@gmail.com') &&
+        <View style={style.page}>
+        <View style={style.button_footer}>
+            <Text style={style.text}>KALAN STOKLAR</Text>
+        </View>
+        <FlatList
+            data={basket}
+            renderItem={renderItem}
+            keyExtractor={product => product.id}
+        />
+        <View style={style.button_borc}>
+            <Text style={style.text}>BORÇLAR</Text>
+        </View>
+        <FlatList
+            data={Debt}
+            renderItem={renderDebt}
+            keyExtractor={product => product.id}
+        />
+        <View style={style.button_footer}>
+            <Text style={style.text}>TOPLANAN PARA</Text>
+        </View>
+
+        <View style={style.main}>
+            <View>
+                <Text>MEVCUT BAKİYE</Text>
             </View>
+            <View>
+                <Text>{AdminAmount} TL</Text>
             </View>
-        </SafeAreaView>
+        </View>
+        </View>}
+        </SafeAreaView>  
     );
 }
 const style = StyleSheet.create({
@@ -138,8 +162,8 @@ const style = StyleSheet.create({
     page: { marginHorizontal: 30 },
     borc: {},
     state: { backgroundColor: '#bdbdbd', paddingHorizontal: 10, paddingVertical: 3, marginBottom: 15 },
-    product: { paddingHorizontal: 10, paddingVertical: 3, marginBottom: 15, fontWeight: 'bold' },
-    button_borc: { marginVertical: 30, padding: 5, marginTop: 70, backgroundColor: '#bdbdbd' },
+    product: { paddingHorizontal: 10, paddingVertical: 3, marginBottom: 5, fontWeight: 'bold' },
+    button_borc: { marginVertical: 5, padding: 5, marginTop: 20, backgroundColor: '#bdbdbd' },
     user: { justifyContent: 'center', alignContent: 'center' }
 })
 
