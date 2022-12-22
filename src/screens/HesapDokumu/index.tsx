@@ -1,14 +1,14 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { SafeAreaView, ScrollView, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useContext, useEffect } from 'react';
+import { SafeAreaView, FlatList, StyleSheet, Text, View } from "react-native";
 import { Store } from '../utils/Store';
 
 export default function AccountStatment({ navigation }) {
 
-  const { state, dispatch, amount, setAmount } = useContext(Store)
+  const { state, amount, showStatment } = useContext(Store)
   const { basket } = state;
 
-  AccountStatment.navigationOptions = ({ }) => ({
-    title: 'Hesap',
+  AccountStatment.navigationOptions = ({ }) => ({   // static navigationOptions amount state control
+    title: 'Market',
     headerRight: () => <Text style={style.bar}>{amount} TL</Text>,
     headerStyle: {
       backgroundColor: '#d50000',
@@ -20,36 +20,10 @@ export default function AccountStatment({ navigation }) {
   });
 
   useEffect(() => {
-    navigation.setParams({ amount });
+    navigation.setParams({ amount });     // check amount change, callback params
   }, [amount]);
 
-  const products = [
-    {
-      name: 'product_1',
-      qty: 20,
-      id: 1,
-      price: 10,
-    },
-    {
-      name: 'product_2',
-      qty: 20,
-      id: 2,
-      price: 10,
-    },
-    {
-      name: 'product_3',
-      qty: 20,
-      id: 3,
-      price: 10,
-    },
-    {
-      name: 'product_4',
-      qty: 20,
-      id: 4,
-      price: 10,
-    }
-  ]
-  const Item = ({ ProductName, ProductPrice, ProductStock, id }) => (
+  const Item = ({ ProductName, ProductPrice, id }) => (
     <View >
       <View style={style.main}>
         <View style={style.area}>
@@ -59,8 +33,8 @@ export default function AccountStatment({ navigation }) {
 
         <View style={style.counter}>
           <Text style={style.product}>ALINAN:</Text>
-          <Text style={style.num}>{basket.find((item) => item.id == id)?.sepetadet}</Text>
-          <Text style={style.product}>Total: {basket.find((item) => item.id == id)?.sepetadet * ProductPrice} TL</Text>
+          <Text style={style.num}>{basket.find((item) => item.id == id)?.sepetadet}</Text>  
+          <Text style={style.product}>Total: {basket.find((item) => item.id == id)?.sepetadet * ProductPrice} TL</Text> 
         </View>
       </View>
     </View>
@@ -72,11 +46,12 @@ export default function AccountStatment({ navigation }) {
   );
   return (
     <SafeAreaView>
+      {(showStatment) &&    //You cannot see the account statement without confirming in the basket section. showStatment = false
       <FlatList
         data={basket.filter(item => item.sepetadet > 0)}
         renderItem={renderItem}
         keyExtractor={product => product.id}
-      />
+      />}
     </SafeAreaView>
   );
 

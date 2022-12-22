@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { View,SafeAreaView,Text,TouchableOpacity,StyleSheet,TextInput } from 'react-native';
 import * as Yup from "yup";
 import {Formik} from "formik";
-
+import auth from '@react-native-firebase/auth';
 export default  class Index extends Component {
 
 
@@ -13,7 +13,24 @@ export default  class Index extends Component {
         }
     }
     _handleSubmit = (values) => {
+        auth()
+            .signInWithEmailAndPassword(values.email, values.password)
+            .then(() => {
+               this.props.navigation.navigate('App');
+            })
+            .catch(error => {
+                if (error.code === 'auth/wrong-password') {
+                    alert('Wrong Password')
+                    return;
+                }
 
+                if (error.code === 'auth/user-not-found') {
+                  alert('User Not Found');
+                  return;
+                }
+
+                console.error(error);
+            });
     }
 
     render() {
@@ -43,34 +60,31 @@ export default  class Index extends Component {
                                  errors,
                                  handleChange
                              }) => (
+                                
                                 <View style={style.form}>
+                                    <Text style={style.text}>KULLANICI ADI</Text>
                                     <TextInput
                                         value={values.email}
                                         onChangeText={handleChange('email')}
-                                        placeholder={"Email"}
                                         keyboardType={"email-address"}
                                         placeholderTextColor={"#302D4C"}
                                         style={style.input}/>
-                                    {(errors.email) && <Text style={style.error}>{errors.email}</Text>}
+                                    <Text style={style.text}>PAROLA</Text>
                                     <View>
                                     <TextInput
                                         value={values.password}
                                         onChangeText={handleChange('password')}
-                                        placeholder={"Şifre"}
                                         placeholderTextColor={"#302D4C"}
                                         secureTextEntry={this.state.hidePassword}
                                         style={style.input}/>
-                                      <TouchableOpacity onPress={()=>this.setState({ hidePassword:!this.state.hidePassword})} style={{ position:'absolute',right:15,top:15}}>
-                                          
+                                      <TouchableOpacity onPress={()=>this.setState({ hidePassword:!this.state.hidePassword})} style={{ position:'absolute',right:15,top:15}}> 
                                       </TouchableOpacity>
-                                    {(errors.password) && <Text style={style.error}>{errors.password}</Text>}
                                     </View>
-
                                     <TouchableOpacity
                                         disabled={!isValid}
                                         onPress={handleSubmit}
                                         style={style.button}>
-                                        <Text style={style.button_text}>Giriş Yap</Text>
+                                        <Text style={style.button_text}>Giriş</Text>
                                     </TouchableOpacity>
                                 </View>
                             )
@@ -87,30 +101,24 @@ const style = StyleSheet.create({
     hero_description:{ color:'rgba(26,25,57,0.8)',fontSize:17,marginTop:15,fontWeight:'500'},
     form:{ flex:1,marginTop:80},
     input:{
-        backgroundColor:'#F7F7F7',
+        backgroundColor:'#bdbdbd',
         padding:15,
         width:300,
         height:50,
-        borderRadius:10,
         paddingHorizontal:25,
         marginBottom:10
     },
-    forgot:{
-        flexDirection:'row',justifyContent:'flex-end',
-        marginTop:10,
-        color:'#706E83'
-    },
     button:{
-        backgroundColor: '#7165E3',
-        padding:20,
+        backgroundColor: '#bdbdbd',
+        padding:10,
         marginTop:45,
-        borderRadius: 10,
         justifyContent: 'center',
-        alignItems:'center'
+        alignItems:'center',
+        marginHorizontal: 70
     },
     button_text:{
-        color:'white',
-        fontWeight:'600',
+        color:'black',
+        fontWeight:'400',
         fontSize:18,
         textAlign:'center'
     },
@@ -121,5 +129,10 @@ const style = StyleSheet.create({
     },
     error:{
         color:'red'
+    },
+    text:{
+        color: 'black',
+        marginBottom: 10,
+        marginLeft: 7
     }
 })

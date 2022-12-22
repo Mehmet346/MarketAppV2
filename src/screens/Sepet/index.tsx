@@ -1,14 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { SafeAreaView, ScrollView, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-// import { PracticeContext } from '../Global/PracticeContext';
+import { SafeAreaView, ScrollView, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";;
 import { Store } from '../utils/Store';
 
 export default function Basket({ navigation }) {
 
-  const { state, dispatch, amount, setAmount } = useContext(Store)
+  const { state, dispatch, firstAmount, amount, setShowStatment, setAmount, setAdminAmount } = useContext(Store)
   const { basket } = state;
 
-  Basket.navigationOptions = ({ }) => ({
+  Basket.navigationOptions = ({ }) => ({   // static navigationOptions amount state control
     title: 'Sepet',
     headerRight: () => <Text style={style.bar}>{amount} TL</Text>,
     headerStyle: {
@@ -21,11 +20,11 @@ export default function Basket({ navigation }) {
   });
 
   useEffect(() => {
-    navigation.setParams({ amount });
+    navigation.setParams({ amount });     // check amount change, callback params
   }, [amount]);
 
   const addCartItem = (data) => {
-    if((amount >= data.price) && (data.qty > 0)) {
+    if ((amount >= data.price) && (data.qty > 0)) {   // Product Stock and Customer amount control
       dispatch({
         type: 'CART_ADD_ITEM',
         payload: data
@@ -35,7 +34,7 @@ export default function Basket({ navigation }) {
   }
 
   const deleteCardItem = (data) => {
-    if((basket.find((item) => item.id == data.id)?.sepetadet > 0 )) {
+    if ((basket.find((item) => item.id == data.id)?.sepetadet > 0)) {   // basket control: Has the product been added?
       dispatch({
         type: 'CART_DELETE_ITEM',
         payload: data
@@ -45,45 +44,47 @@ export default function Basket({ navigation }) {
   }
 
   const Item = ({ ProductName, ProductPrice, ProductStock, id }) => (
-    <View>
+    <ScrollView>
       <View>
-        <View style={style.main}>
-          <View style={style.area}>
-            <Text>{ProductName}</Text>
-            <Text>Kalan {ProductStock - (basket.find((item) => item.id == id)?.sepetadet) ? (ProductStock - basket.find((item) => item.id == id)?.sepetadet) : ProductStock}</Text>
-            <Text>{ProductPrice} TL</Text>
-          </View>
+        <View>
+          <View style={style.main}>
+            <View style={style.area}>
+              <Text>{ProductName}</Text>
+              <Text>Kalan {ProductStock - (basket.find((item) => item.id == id)?.sepetadet) ? (ProductStock - basket.find((item) => item.id == id)?.sepetadet) : ProductStock}</Text>
+              <Text>{ProductPrice} TL</Text>
+            </View>
 
-          <View style={style.counter}>
-            <TouchableOpacity style={style.button}
-              onPress={() => {
-                deleteCardItem({
-                  name: ProductName,
-                  price: ProductPrice,
-                  qty: ProductStock,
-                  id: id
-                })
-              }} >
-            <Text style={style.count}>-</Text></TouchableOpacity>
-            <Text style={style.count_weight}> {basket.find((item) => item.id == id)?.sepetadet} </Text>
-            <TouchableOpacity style={style.button}
-              onPress={() => {
-                addCartItem({
-                  name: ProductName,
-                  price: ProductPrice,
-                  qty: ProductStock,
-                  id: id
-                })
-              }}
-            ><Text style={style.count}>+</Text></TouchableOpacity>
+            <View style={style.counter}>
+              <TouchableOpacity style={style.button}
+                onPress={() => {
+                  deleteCardItem({
+                    name: ProductName,
+                    price: ProductPrice,
+                    qty: ProductStock,
+                    id: id
+                  })
+                }} >
+                <Text style={style.count}>-</Text></TouchableOpacity>
+              <Text style={style.count_weight}> {basket.find((item) => item.id == id)?.sepetadet} </Text>
+              <TouchableOpacity style={style.button}
+                onPress={() => {
+                  addCartItem({
+                    name: ProductName,
+                    price: ProductPrice,
+                    qty: ProductStock,
+                    id: id
+                  })
+                }}
+              ><Text style={style.count}>+</Text></TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }) => (         //FlatList Render Item
     <Item key={item.id} ProductName={item.name} ProductStock={item.qty} ProductPrice={item.price}
       id={item.id} />
   );
@@ -96,6 +97,16 @@ export default function Basket({ navigation }) {
         renderItem={renderItem}
         keyExtractor={product => product.id}
       />
+      <View style={style.footer}>
+        <View style={{ marginBottom: 20 }}>
+          <Text style={style.text}>Toplam: {firstAmount - amount} TL</Text>
+        </View>
+      </View>
+      <View >
+        <TouchableOpacity style={style.button_footer} onPress={() => { setShowStatment(true); setAdminAmount(firstAmount - amount); navigation.navigate('AccountStatment') }}>
+          <Text style={style.text}>Onayla</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 
@@ -111,6 +122,6 @@ const style = StyleSheet.create({
   count_weight: { fontWeight: "700", fontSize: 20 },
   footer: { alignItems: 'center', marginTop: 200 },
   text: { fontWeight: '400', fontSize: 30, },
-  button_footer: { marginHorizontal: 100, alignItems: 'center', backgroundColor: 'grey', },
+  button_footer: { marginHorizontal: 100, alignItems: 'center', backgroundColor: '#bdbdbd', },
   bar: { color: 'white', marginRight: 15 }
 })

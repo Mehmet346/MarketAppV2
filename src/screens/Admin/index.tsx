@@ -1,107 +1,135 @@
-import React, {useState, useContext, useEffect} from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-// import { PracticeContext } from '../Global/PracticeContext';
+import React, { useContext, useEffect } from 'react';
+import { SafeAreaView, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Store } from '../utils/Store';
 
 
-export default function Admin({navigation}) {
-    // const {
-    //     kekstraStock,
-    //     cubukKrakerStock,
-    //     sutStock,
-    //     AdminAmount, 
-    // } = useContext(PracticeContext)
+export default function Admin({ navigation }) {
 
+    const { state, dispatch, AdminAmount, setAdminAmount } = useContext(Store)
+    const { basket, debt_state } = state;
 
+    Admin.navigationOptions = ({ }) => ({
+        title: 'Admin',
+        headerStyle: {
+            backgroundColor: '#d50000',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+            fontWeight: 'bold',
+        },
+    });
+    useEffect(() => {
+        navigation.setParams({});
+    }, []);
 
+    const Debt = [          // My mock api: created and contextApi only once debt
+    {
+      personelName: 'PERSONEL 1',
+      id: 1,
+      debt: 35
+    },
+    {
+       personelName: 'PERSONEL 2',
+       id: 2,
+       debt: 150
+    },
+    {
+      personelName: 'PERSONEL 3',
+      id: 3,
+      debt: 25,
+    }
+  ];
 
-//     Admin.navigationOptions = ({}) => ({
-//         title: 'Admin',
-//         headerStyle: {
-//             backgroundColor: '#d50000',
-//           },
-//           headerTintColor: '#fff',
-//           headerTitleStyle: {
-//             fontWeight: 'bold',
-//           },
-//     });
-//     useEffect(() => {
-//         navigation.setParams({ });
-//    },[]);
+  const debtPayment = (data) => {
+    if(AdminAmount > data.debt){
+        dispatch({
+            type: 'DEBT_PAYMENT',
+            payload: data
+          })
+          setAdminAmount(AdminAmount - data.debt)
+    }
+    else{
+        alert("Borcu ödemek için bakiyeniz yetersiz")
+    }
+  }
 
- 
+    const Item = ({ ProductName, ProductStock, id }) => ( //row:34 First stock - Basket Stock = End Stock 
+        <View style={style.page}>
+            <View style={style.main}>
+                <View>
+                    <Text style={style.product}>{ProductName}</Text>
+                </View>
+                <View>
+                    <Text style={style.product}>{ProductStock - (basket.find((item) => item.id == id)?.sepetadet)}</Text> 
+                </View>
+            </View>
+        </View>
+    )
+    const renderItem = ({ item }) => (   //FlatList Stock
+        <Item key={item.id} ProductName={item.name} ProductStock={item.qty} ProductPrice={item.price} id={item.id} />
+    );
+
+    const DebtItem = ({PersonelName, Debt, id}) =>(  //FlatList Debt
+        <View style={style.main}>
+        <View style={style.product}>
+            <Text style={style.product}>{PersonelName}</Text>
+        </View>
+        <View>
+            <Text style={style.product}>{Debt}</Text>
+        </View>
+        <View style={style.borc}>
+            <Text style={style.state}>{((debt_state.find((item) => item.id == id)?.payment_state)) ? <Text>ÖDENDİ</Text> 
+            : 
+            <TouchableOpacity
+            onPress={() => {
+                debtPayment({
+                    name: PersonelName,
+                    debt: Debt,
+                    id: id,
+                })
+            }}
+            ><Text>BORCU ÖDE</Text></TouchableOpacity>}</Text>
+        </View>
+    </View>
+    )
+
+    const renderDebt = ({ item }) => (    //FlatList Debt
+    <DebtItem key={item.id} PersonelName={item.personelName} Debt={item.debt} state={item.state} id={item.id} />);
 
     return (
         <SafeAreaView>
-           
-             <View>
-                <Text style={style.user}>Admin değilsiniz!</Text>
-             <TouchableOpacity >
-                <Text>Çıkış Yap</Text>
-            </TouchableOpacity></View>  
-            
-            <TouchableOpacity >
-                <Text>Çıkış Yap</Text>
-            </TouchableOpacity>
+                    <View style={style.page}>
+            <View style={style.button_footer}>
+                <Text style={style.text}>KALAN STOKLAR</Text>
+            </View>
+            <FlatList
+                data={basket}
+                renderItem={renderItem}
+                keyExtractor={product => product.id}
+            />
+            <View style={style.button_borc}>
+                <Text style={style.text}>BORÇLAR</Text>
+            </View>
+            <FlatList
+                data={Debt}
+                renderItem={renderDebt}
+                keyExtractor={product => product.id}
+            />
+            <View style={style.button_footer}>
+                <Text style={style.text}>TOPLANAN PARA</Text>
+            </View>
 
-            
-              
-                            <View style={style.page}>
-                            <View style={style.button_footer}>
-                                <Text style={style.text}>KALAN STOKLAR</Text>
-                            </View>
-            
-                            <View style={style.main}>
-                                <View>
-                                    <Text style={style.product}>KEKSTRA</Text>
-                                    <Text style={style.product}>ÇUBUK KRAKER</Text>
-                                    <Text style={style.product}>SÜT</Text>
-                                </View>
-                                <View>
-                                    <Text style={style.product}>{kekstraStock}</Text>
-                                    <Text style={style.product}>{cubukKrakerStock}</Text>
-                                    <Text style={style.product}>{sutStock}</Text>
-                                </View>
-                            </View>
-            
-                            <View style={style.button_borc}>
-                                <Text style={style.text}>BORÇLAR</Text>
-                            </View>
-            
-                            <View style={style.main}>
-                                <View style={style.product}>
-                                    <Text style={style.product}>PERSONEL 1</Text>
-                                    <Text style={style.product}>PERSONEL 2</Text>
-                                    <Text style={style.product}>PERSONEL 3</Text>
-                                </View>
-                                <View>
-                                    <Text style={style.product}>35 TL</Text>
-                                    <Text style={style.product}>150 TL</Text>
-                                    <Text style={style.product}>25 TL</Text>
-                                </View>
-                                <View style={style.borc}>
-                                    <Text style={style.state}>ÖDENDİ</Text>
-                                    <Text style={style.state}>ÖDENDİ</Text>
-                                    <Text style={style.state}>ÖDENDİ</Text>
-                                </View>
-                            </View>
-            
-                            <View style={style.button_footer}>
-                                <Text style={style.text}>TOPLANAN PARA</Text>
-                            </View>
-            
-                            <View style={style.main}>
-                                <View>
-                                    <Text>MEVCUT BAKİYE</Text>
-                                </View>
-                                <View>
-                                    <Text>{AdminAmount} TL</Text>
-                                </View>
-                            </View>
-            
-                        </View>
-                
+            <View style={style.main}>
+                <View>
+                    <Text>MEVCUT BAKİYE</Text>
+                </View>
+                <View>
+                    <Text>{AdminAmount} TL</Text>
+                </View>
+            </View>
+            </View>
         </SafeAreaView>
-    )
+    );
 }
 const style = StyleSheet.create({
     text: { fontWeight: '400', fontSize: 30, marginLeft: 10 },
@@ -110,8 +138,8 @@ const style = StyleSheet.create({
     page: { marginHorizontal: 30 },
     borc: {},
     state: { backgroundColor: '#bdbdbd', paddingHorizontal: 10, paddingVertical: 3, marginBottom: 15 },
-    product: { paddingHorizontal: 10, paddingVertical: 3, marginBottom: 15 , fontWeight:'bold'},
-    button_borc: { marginVertical: 30, padding: 5, marginTop:70, backgroundColor: '#bdbdbd' },
-    user: {justifyContent: 'center', alignContent: 'center' }
+    product: { paddingHorizontal: 10, paddingVertical: 3, marginBottom: 15, fontWeight: 'bold' },
+    button_borc: { marginVertical: 30, padding: 5, marginTop: 70, backgroundColor: '#bdbdbd' },
+    user: { justifyContent: 'center', alignContent: 'center' }
 })
 

@@ -9,7 +9,7 @@ function Product({ navigation }) {
   const { state, dispatch, amount, setAmount } = useContext(Store)
   const { basket } = state;
 
-  Product.navigationOptions = ({ }) => ({
+  Product.navigationOptions = ({ }) => ({   // static navigationOptions amount state control
     title: 'Market',
     headerRight: () => <Text style={style.bar}>{amount} TL</Text>,
     headerStyle: {
@@ -22,11 +22,11 @@ function Product({ navigation }) {
   });
 
   useEffect(() => {
-    navigation.setParams({ amount });
+    navigation.setParams({ amount });   // check amount change, callback params
   }, [amount]);
 
   const addCartItem = (data) => {
-    if((amount >= data.price) && (data.qty > 0)) {
+    if ((amount >= data.price) && (data.qty > 0)) { // Product Stock and Customer amount control
       dispatch({
         type: 'CART_ADD_ITEM',
         payload: data
@@ -36,7 +36,7 @@ function Product({ navigation }) {
   }
 
   const deleteCardItem = (data) => {
-    if((basket.find((item) => item.id == data.id)?.sepetadet > 0 )) {
+    if ((basket.find((item) => item.id == data.id)?.sepetadet > 0)) {  // basket control: Has the product been added?
       dispatch({
         type: 'CART_DELETE_ITEM',
         payload: data
@@ -45,7 +45,7 @@ function Product({ navigation }) {
     }
   }
 
-  const products = [
+  const products = [          // My mock api: created and contextApi only once
     {
       name: 'product_1',
       qty: 20,
@@ -73,47 +73,46 @@ function Product({ navigation }) {
   ];
 
   const Item = ({ ProductName, ProductPrice, ProductStock, id }) => (
-    <View>
+    <ScrollView>
       <View>
-        <View style={style.main}>
-          <View style={style.area}>
-            <Text>{ProductName}</Text>
-            <Text>Kalan {ProductStock - (basket.find((item) => item.id == id)?.sepetadet) ? (ProductStock - basket.find((item) => item.id == id)?.sepetadet) : ProductStock}</Text>
-            <Text>{ProductPrice} TL</Text>
+        <View>
+          <View style={style.main}>
+            <View style={style.area}>
+              <Text>{ProductName}</Text>
+              <Text>Kalan {ProductStock - (basket.find((item) => item.id == id)?.sepetadet) ? (ProductStock - basket.find((item) => item.id == id)?.sepetadet) : ProductStock}</Text>
+              <Text>{ProductPrice} TL</Text>
+            </View>
 
+            <View style={style.counter}>
+              <TouchableOpacity style={style.button}
+                onPress={() => {
+                  deleteCardItem({
+                    name: ProductName,
+                    price: ProductPrice,
+                    qty: ProductStock,
+                    id: id
+                  })
+                }} ><Text style={style.count}>-</Text></TouchableOpacity>
+              <Text style={style.count_weight}> {(basket.find((item) => item.id == id)?.sepetadet) ? (basket.find((item) => item.id == id)?.sepetadet) : 0} </Text>
+              <TouchableOpacity style={style.button}
+                onPress={() => {
+                  addCartItem({
+                    name: ProductName,
+                    price: ProductPrice,
+                    qty: ProductStock,
+                    id: id
+                  })
+                }}
+              ><Text style={style.count}>+</Text></TouchableOpacity>
+            </View>
           </View>
-
-          <View style={style.counter}>
-            <TouchableOpacity style={style.button}
-              onPress={() => {
-                deleteCardItem({
-                  name: ProductName,
-                  price: ProductPrice,
-                  qty: ProductStock,
-                  id: id
-
-                })
-              }} ><Text style={style.count}>-</Text></TouchableOpacity>
-            <Text style={style.count_weight}> {(basket.find((item) => item.id == id)?.sepetadet) ? (basket.find((item) => item.id == id)?.sepetadet) : 0} </Text>
-            <TouchableOpacity style={style.button}
-              onPress={() => {
-                addCartItem({
-                  name: ProductName,
-                  price: ProductPrice,
-                  qty: ProductStock,
-                  id: id
-                })
-              }}
-            ><Text style={style.count}>+</Text></TouchableOpacity>
-          </View>
-
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }) => (   //FlatList Render Item
     <Item key={item.id} ProductName={item.name} ProductStock={item.qty} ProductPrice={item.price}
       id={item.id} />
   );

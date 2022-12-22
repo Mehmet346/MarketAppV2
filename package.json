@@ -1,5 +1,5 @@
 {
-  "name": "AwesomeTSProject",
+  "name": "Project",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.11",
-    "axios": "^1.2.1",
+    "@react-native-firebase/app": "^16.5.0",
+    "@react-native-firebase/auth": "^16.5.0",
     "formik": "^2.2.9",
     "react": "18.1.0",
     "react-native": "0.70.6",

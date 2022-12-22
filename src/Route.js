@@ -13,7 +13,7 @@ import Admin from './screens/Admin/index';
 
 const RayonStack = createStackNavigator({
     Rayon:{screen:Rayon}
-})
+});
 
 const BasketStack = createStackNavigator({
     Basket:{screen:Basket}
@@ -31,35 +31,31 @@ const AuthenticateStack = createStackNavigator({
     Login: {
         screen:Login,
         navigationOptions:{
-            header:null
+            title: 'Giriş Ekranı',
+            headerTitleAlign: 'center',
+            headerStyle: {
+                backgroundColor: '#d50000',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
         }
     }
 });
 
 const AppBottomNavigator = createBottomTabNavigator({
         Rayon:{
-            screen:RayonStack,
-            navigationOptions:{
-                title:'Reyon',
-            }
+            screen:RayonStack
         },
         Basket:{
-            screen:BasketStack,
-            navigationOptions:{
-                title: 'Sepet'
-            }
+            screen:BasketStack
         },
         AccountStatment:{
-            screen:AccountStatmentStack,
-            navigationOptions:{
-                title: 'Hesap Dökümü'
-            }
+            screen:AccountStatmentStack
         },
         Admin:{
-            screen:AdminStack,
-            navigationOptions:{
-                title:'Admin'
-            }
+            screen:AdminStack
         },
 }, {
     tabBarOptions:{
@@ -71,10 +67,10 @@ const AppBottomNavigator = createBottomTabNavigator({
 
 const SwitchNavigator = createSwitchNavigator({
     App:AppBottomNavigator,
-    //AuthRedirect,
-    //Auth:AuthenticateStack
+    AuthRedirect,
+    Auth:AuthenticateStack
 },{
-    initialRouteName:'App'
+    initialRouteName:'AuthRedirect'
 })
 
 export  default createAppContainer(SwitchNavigator);
